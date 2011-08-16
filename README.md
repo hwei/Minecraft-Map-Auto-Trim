@@ -4,8 +4,8 @@ ScorePlugin
 Score plugin for bukkit.
 
 
-Description
------------
+Features
+--------
 
 * Viewers can give a score to a work. The range of score is 0.0 - 10.0.
 * Author will receive reward according to the final score.
