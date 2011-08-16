@@ -775,7 +775,7 @@ public class ScoreSignOperationFactory {
 			sign.setLine(2, "");
 			sign.setLine(3, "");
 			sign.update();
-			ScoreSignOperationFactory.this.output.ToPlayer(this.player, "Removed scores functions.");
+			ScoreSignOperationFactory.this.output.ToPlayer(this.player, "Removed score functions.");
 			return true;
 
 		}
