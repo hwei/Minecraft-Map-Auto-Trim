@@ -20,7 +20,7 @@ Required:
 
 Optional:
 
-* PermissionBukkit
+* PermissionBukkit (There is an internal permissions system for Score plugin itself.)
 
 
 Usage
@@ -52,8 +52,8 @@ Commands
     /scr clear Clear all scores from viewers.
     /scr maxreward <amount> Set max reward for author.
     /scr close Close a score sign and distribute rewards.
-    /scr addadmin <name> Add an admin.
-    /scr removeadmin <name> Remove an admin.
+    /scr addadmin <name> Add an admin. (For servers without PermissionsBukkit)
+    /scr removeadmin <name> Remove an admin. (For servers without PermissionsBukkit)
 
 
 Permissions
@@ -73,3 +73,23 @@ Permissions
         description: Allows you to view info and give score.
         default: true
  
+Configuation
+-----------
+
+config.yml example
+
+    # How much money to give a score.
+    price: 25.0
+    # How much money the viewer will win if he has given the exact score to the final score.
+    viewer_max_reward: 200.0
+    # How much money the author will win if he has got score of 10.0.
+    auther_max_reward: 2000.0
+    # If the difference form viewer's score to final score is greater than this, he will win no money.
+    viewer_score_threshold: 1.5
+    # If the score of auther is less than this, he will win no money.
+    auther_score_threshold: 6.0
+    # If do not have PermissionsBukkit plugin, set score admins here.
+    admins:
+    - HWei_just_example_please_remove_this
+    - jagt_just_example_please_remove_this
+
