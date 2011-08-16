@@ -1,0 +1,50 @@
+<project name="ScorePlugin" default="dist" basedir=".">
+	<property name="pluginname" value="Score"/>
+	<property name="bukkit.jar" location="lib/bukkit-0.0.1-SNAPSHOT.jar"/>
+	<property name="BOSEconomy7.jar" location="lib/BOSEconomy7.jar"/>
+	<property name="Essentials.jar" location="lib/Essentials.jar"/>
+	<property name="iCo4.jar" location="lib/iCo4.jar"/>
+	<property name="iCo5.jar" location="lib/iCo5.jar"/>
+	<property name="iCo6.jar" location="lib/iCo6.jar"/>
+	<property name="MultiCurrency.jar" location="lib/MultiCurrency.jar"/>
+	<property name="plugins" location="D:/Games/minecraft/bukkit/plugins"/>
+
+	<property name="src" location="src"/>
+	<property name="bin" location="bin"/>
+	<property name="dist" location="dist"/>
+	
+	<target name="init">
+		<mkdir dir="${bin}"/>
+	</target>
+	
+	<target name="compile" depends="init">
+		<javac srcdir="${src}/main/java" destdir="${bin}" includeantruntime="false">
+			<classpath>
+				<pathelement location="${bukkit.jar}"/>
+				<pathelement location="${BOSEconomy7.jar}"/>
+				<pathelement location="${Essentials.jar}"/>
+				<pathelement location="${iCo4.jar}"/>
+				<pathelement location="${iCo5.jar}"/>
+				<pathelement location="${iCo6.jar}"/>
+				<pathelement location="${MultiCurrency.jar}"/>
+			</classpath>
+		</javac>
+	</target>
+	
+	<target name="dist" depends="compile">
+		<mkdir dir="${dist}"/>
+		<jar jarfile="${dist}/${pluginname}.jar">
+			<fileset dir="${bin}"/>
+			<fileset file="${src}/main/resources/plugin.yml"/>
+		</jar>
+	</target>
+	
+	<target name="deploy" depends="dist">
+		<copy file="${dist}/${pluginname}.jar" todir="${plugins}"/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${bin}"/>
+		<delete dir="${dist}"/>
+	</target>
+</project>

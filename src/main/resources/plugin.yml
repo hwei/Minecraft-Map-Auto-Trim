@@ -1,0 +1,38 @@
+name: Score
+main: me.hwei.bukkit.scoreplugin.ScorePlugin
+version: 0.1
+description: Give score of buildings for each other.
+author: HWei
+database: true
+commands:
+  score:
+    aliases: scr
+    description: Score v0.1 developed by HWei.
+    usage: 
+      !!str "For users:\n\
+      \u00A7a/scr info \u00A7fView score info.\n\
+      \u00A7a/scr <score> \u00A7fGive a score.\n\
+      For Admins:\n\
+      \u00A7a/scr open \u00A7fOpen a score sign.\n\
+      \u00A7a/scr admin \u00A7fView info for admins.\n\
+      \u00A7a/scr set <score> \u00A7fSet a forced score.\n\
+      \u00A7a/scr unset \u00A7fUnset forced score.\n\
+      \u00A7a/scr clear \u00A7fClear all scores from viewers.\n\
+      \u00A7a/scr maxreward <amount> \u00A7fSet max reward for author.\n\
+      \u00A7a/scr close \u00A7fClose a score sign and distribute rewards.\n\
+      \u00A7a/scr addadmin <name> \u00A7fAdd an admin.\n\
+      \u00A7a/scr removeadmin <name> \u00A7fRemove an admin."
+permissions:
+  score.*:
+    description: Gives access to all Score commands
+    children:
+      score.admin: true
+  score.admin:
+    description: Allows you to manage Score.
+    default: op
+    children:
+      score.use: true
+  score.use:
+    description: Allows you to view info and give score.
+    default: true
+ 
