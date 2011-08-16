@@ -1,12 +1,14 @@
 ScorePlugin
 ===========
 
+Score plugin for bukkit.
+
+
 Description
 -----------
 
-Score plugin for bukkit.
-
-* Let viewers give a score of your work. You will receive reward according to the final score.
+* Viewers can give a score to a work. The range of score is 0.0 - 10.0.
+* Author will receive reward according to the final score.
 * Give score will cost viewer money but he will win reward if the score is near to the final score.
 * Final score is average score of viewers generally. But admin can also set it to a forced score.
 
@@ -78,7 +80,7 @@ Configuation
 
 config.yml example
 
-    # How much money to give a score.
+    # How much money to take from viewer when give a score.
     price: 25.0
     # How much money the viewer will win if he has given the exact score to the final score.
     viewer_max_reward: 200.0
