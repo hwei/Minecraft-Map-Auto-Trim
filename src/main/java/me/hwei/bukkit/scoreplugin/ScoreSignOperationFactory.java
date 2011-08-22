@@ -235,7 +235,7 @@ public class ScoreSignOperationFactory {
 							+ String.format("%.1f", score.getScore())
 							+ ChatColor.WHITE
 							+ ", and won "+ ChatColor.GREEN
-							+ ScoreSignOperationFactory.this.moneyManager.Format(work.getReward())
+							+ ScoreSignOperationFactory.this.moneyManager.Format(score.getReward())
 							+ ChatColor.WHITE + "."
 							);
 					return true;
