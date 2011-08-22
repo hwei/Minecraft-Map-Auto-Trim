@@ -7,6 +7,10 @@ import org.bukkit.util.config.Configuration;
 public class ScoreConfiguation {
 	public ScoreConfiguation(Configuration configuation) {
 		this.configuation = configuation;
+		this.Load();
+	}
+	
+	public void Load() {
 		this.configuation.load();
 		this.price = this.configuation.getDouble("price", 0.0);
 		this.viewer_max_reward = this.configuation.getDouble("viewer_max_reward", 0.0);
@@ -16,17 +20,17 @@ public class ScoreConfiguation {
 		this.adminList = this.configuation.getStringList("admins", null);
 	}
 	
-	public void Save() {
+	public void SaveAdminList() {
+		List<String> newAdminList = this.adminList;
+		this.Load();
 		this.configuation.setProperty("price", this.price);
 		this.configuation.setProperty("viewer_max_reward", this.viewer_max_reward);
 		this.configuation.setProperty("auther_max_reward", this.auther_max_reward);
 		this.configuation.setProperty("viewer_score_threshold", this.viewer_score_threshold);
 		this.configuation.setProperty("auther_score_threshold", this.auther_score_threshold);
-		this.configuation.setProperty("admins", adminList);
+		this.configuation.setProperty("admins", newAdminList);
 		this.configuation.save();
 	}
-	
-	
 
 	protected Configuration configuation = null;
 	protected double price = 0.0;
