@@ -40,7 +40,6 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 
 	@Override
 	public void onDisable() {
-		this.configuation.Save();
 		for(Player player : this.getServer().getOnlinePlayers()) {
 			this.permissionManager.RemoveAdmin(player);
 		}
@@ -72,46 +71,72 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		if(args.length == 0) {
+			this.output.ToCommandSender(sender, command.getDescription());
+			return true;
+		}
+		if(args.length == 1) {
+			if(args[0].equalsIgnoreCase("reload")) {
+				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.ADMIN)) {
+					this.output.ToCommandSender(sender, "Do not have permissions.");
+				}
+				this.configuation.Load();
+				this.output.ToCommandSender(sender, "Config reloaded.");
+				return true;
+			}
+			if(args[0].equalsIgnoreCase("listadmin")) {
+				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.ADMIN)) {
+					this.output.ToCommandSender(sender, "Do not have permissions.");
+				}
+				StringBuilder sb = new StringBuilder();
+				for(String name : this.configuation.getAdminList()) {
+					sb.append(name);
+					sb.append(' ');
+				}
+				this.output.ToCommandSender(sender, sb.toString());
+				return true;
+			}
+		}
+		if(args.length == 2) {
+			if(args[0].equalsIgnoreCase("addadmin")) {
+				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.ADMIN)) {
+					this.output.ToCommandSender(sender, "Do not have permissions.");
+				}
+				Player newAdmin = this.getServer().getPlayer(args[1]);
+				if(newAdmin == null) {
+					this.output.ToCommandSender(sender, "Can not find player " + ChatColor.GREEN + args[1] + ChatColor.WHITE + ".");
+					return true;
+				} else {
+					this.permissionManager.AddAdmin(newAdmin);
+					this.configuation.SaveAdminList();
+					this.output.ToCommandSender(sender, "Added " + ChatColor.GREEN + args[1] + ChatColor.WHITE + " to scores admin.");
+					return true;
+				}
+			}
+			if(args[0].equalsIgnoreCase("removeadmin")) {
+				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.ADMIN)) {
+					this.output.ToCommandSender(sender, "Do not have permissions.");
+				}
+				Player oldAdmin = this.getServer().getPlayer(args[1]);
+				if(oldAdmin == null) {
+					this.output.ToCommandSender(sender, "Can not find player " + ChatColor.GREEN + args[1] + ChatColor.WHITE + ".");
+					return true;
+				} else {
+					this.permissionManager.RemoveAdmin(oldAdmin);
+					this.configuation.SaveAdminList();
+					this.output.ToCommandSender(sender, "Removed " + ChatColor.GREEN + args[1] + ChatColor.WHITE + " from scores admin.");
+					return true;
+				}
+			}
+		}
+		
 		Player player = null;
 		if(sender instanceof Player) {
 			player = (Player)sender;
 		}
 		if(player == null)
 			return false;
-		if(args.length == 0) {
-			this.output.ToPlayer(player, command.getDescription());
-			return true;
-		}
-		if(args.length == 2) {
-			if(args[0].equalsIgnoreCase("addadmin")) {
-				if(!this.permissionManager.HasPermission(player, ScorePermissionType.ADMIN)) {
-					this.output.ToPlayer(player, "Do not have permissions.");
-				}
-				Player newAdmin = this.getServer().getPlayer(args[1]);
-				if(newAdmin == null) {
-					this.output.ToPlayer(player, "Can not find player " + ChatColor.GREEN + args[1] + ChatColor.WHITE + ".");
-					return true;
-				} else {
-					this.permissionManager.AddAdmin(newAdmin);
-					this.output.ToPlayer(player, "Added " + ChatColor.GREEN + args[1] + ChatColor.WHITE + " to scores admin.");
-					return true;
-				}
-			}
-			if(args[0].equalsIgnoreCase("removeadmin")) {
-				if(!this.permissionManager.HasPermission(player, ScorePermissionType.ADMIN)) {
-					this.output.ToPlayer(player, "Do not have permissions.");
-				}
-				Player oldAdmin = this.getServer().getPlayer(args[1]);
-				if(oldAdmin == null) {
-					this.output.ToPlayer(player, "Can not find player " + ChatColor.GREEN + args[1] + ChatColor.WHITE + ".");
-					return true;
-				} else {
-					this.permissionManager.RemoveAdmin(oldAdmin);
-					this.output.ToPlayer(player, "Removed " + ChatColor.GREEN + args[1] + ChatColor.WHITE + " from scores admin.");
-					return true;
-				}
-			}
-		}
+		
 		IScoreSignOperation scoreCommand = this.signOperationFactory.Create(args, player);
 		if(scoreCommand == null) {
 			this.output.ToPlayer(player, "Don't have permissions or wrong command.");
