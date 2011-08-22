@@ -2,6 +2,7 @@ package me.hwei.bukkit.scoreplugin;
 
 import java.util.logging.Logger;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -12,6 +13,13 @@ public class ScoreOutput {
 		this.server = server;
 		this.prefix_normal = "[" + pluginName + "] ";
 		this.prefix_color = "[" + ChatColor.YELLOW + pluginName + ChatColor.WHITE + "] ";
+	}
+	public void ToCommandSender(CommandSender sender, String message) {
+		if(sender instanceof Player) {
+			sender.sendMessage(this.prefix_color + message);
+		} else {
+			sender.sendMessage(this.prefix_normal + message);
+		}
 	}
 	public void ToPlayer(Player player, String message) {
 		player.sendMessage(this.prefix_color + message);
