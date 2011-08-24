@@ -79,6 +79,7 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 			if(args[0].equalsIgnoreCase("reload")) {
 				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.ADMIN)) {
 					this.output.ToCommandSender(sender, "Do not have permissions.");
+					return true;
 				}
 				this.configuation.Load();
 				this.output.ToCommandSender(sender, "Config reloaded.");
@@ -87,6 +88,7 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 			if(args[0].equalsIgnoreCase("listadmin")) {
 				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.ADMIN)) {
 					this.output.ToCommandSender(sender, "Do not have permissions.");
+					return true;
 				}
 				StringBuilder sb = new StringBuilder();
 				for(String name : this.configuation.getAdminList()) {
@@ -101,6 +103,7 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 			if(args[0].equalsIgnoreCase("addadmin")) {
 				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.ADMIN)) {
 					this.output.ToCommandSender(sender, "Do not have permissions.");
+					return true;
 				}
 				Player newAdmin = this.getServer().getPlayer(args[1]);
 				if(newAdmin == null) {
@@ -116,6 +119,7 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 			if(args[0].equalsIgnoreCase("removeadmin")) {
 				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.ADMIN)) {
 					this.output.ToCommandSender(sender, "Do not have permissions.");
+					return true;
 				}
 				Player oldAdmin = this.getServer().getPlayer(args[1]);
 				if(oldAdmin == null) {
