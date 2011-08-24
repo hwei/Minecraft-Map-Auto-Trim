@@ -170,7 +170,6 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 			BlockBreakEvent e = (BlockBreakEvent)event;
 			Player player = e.getPlayer();
 			if(player == null) {
-				e.setCancelled(true);
 				return;
 			}
 			if(e.getBlock().getState() instanceof Sign) {
@@ -181,7 +180,14 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 				} else {
 					IScoreSignOperation signOperation = this.signOperationFactory.Create(new String[] {"remove"}, player);
 					if(signOperation == null) {
-						e.setCancelled(true);
+						Work work = this.getDatabase().find(Work.class)
+						.where()
+						.eq("pos_x", sign.getX())
+						.eq("pos_y", sign.getY())
+						.eq("pos_z", sign.getZ())
+						.findUnique();
+						if(work != null)
+							e.setCancelled(true);
 						return;
 					} else {
 						signOperation.Execute(sign);
