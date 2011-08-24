@@ -1,13 +1,13 @@
 name: Score
 main: me.hwei.bukkit.scoreplugin.ScorePlugin
-version: 0.2
+version: 0.2b
 description: Give score of buildings for each other.
 author: HWei
 database: true
 commands:
   score:
     aliases: scr
-    description: Score v0.1 developed by HWei.
+    description: Score plugin developed by HWei.
     usage: 
       !!str "For Users:\n\
       \u00A7a/scr info \u00A7fView score info.\n\
