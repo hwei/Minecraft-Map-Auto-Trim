@@ -1,7 +1,5 @@
 package me.hwei.bukkit.scoreplugin;
 
-import java.util.List;
-
 import org.bukkit.util.config.Configuration;
 
 public class ScoreConfiguation {
@@ -17,31 +15,24 @@ public class ScoreConfiguation {
 		this.auther_max_reward = this.configuation.getDouble("auther_max_reward", 0.0);
 		this.viewer_score_threshold = this.configuation.getDouble("viewer_score_threshold", 0.0);
 		this.auther_score_threshold = this.configuation.getDouble("auther_score_threshold", 0.0);
-		this.adminList = this.configuation.getStringList("admins", null);
+		this.tp_price = this.configuation.getDouble("tp_price", 0.0);
 	}
 	
-	public void SaveAdminList() {
-		List<String> newAdminList = this.adminList;
-		this.Load();
-		this.configuation.setProperty("price", this.price);
-		this.configuation.setProperty("viewer_max_reward", this.viewer_max_reward);
-		this.configuation.setProperty("auther_max_reward", this.auther_max_reward);
-		this.configuation.setProperty("viewer_score_threshold", this.viewer_score_threshold);
-		this.configuation.setProperty("auther_score_threshold", this.auther_score_threshold);
-		this.configuation.setProperty("admins", newAdminList);
-		this.configuation.save();
-	}
-
 	protected Configuration configuation = null;
 	protected double price = 0.0;
 	protected double viewer_max_reward = 0.0;
 	protected double auther_max_reward = 0.0;
 	protected double viewer_score_threshold = 0.0;
 	protected double auther_score_threshold = 0.0;
-	protected List<String> adminList = null;
+	protected double tp_price = 0.0;
 	
-	public List<String> getAdminList() {
-		return adminList;
+
+	public double getTp_price() {
+		return tp_price;
+	}
+
+	public void setTp_price(double tp_price) {
+		this.tp_price = tp_price;
 	}
 
 	public double getPrice() {

@@ -1,6 +1,8 @@
 package me.hwei.bukkit.scoreplugin;
 
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,7 +20,7 @@ public class ScoreOutput {
 		if(sender instanceof Player) {
 			sender.sendMessage(this.prefix_color + message);
 		} else {
-			sender.sendMessage(this.prefix_normal + message);
+			sender.sendMessage(this.prefix_normal + ChatColor.stripColor(message));
 		}
 	}
 	public void ToPlayer(Player player, String message) {
@@ -32,6 +34,9 @@ public class ScoreOutput {
 	}
 	public void ToConsole(String message) {
 		this.consoleLogger.info(this.prefix_normal + message);
+	}
+	public void ToAll(String message) {
+		this.server.broadcastMessage(this.prefix_color + message);
 	}
 	protected String prefix_color;
 	protected String prefix_normal;

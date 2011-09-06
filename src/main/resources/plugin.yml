@@ -1,6 +1,6 @@
 name: Score
 main: me.hwei.bukkit.scoreplugin.ScorePlugin
-version: 0.2b
+version: 0.3
 description: Give score of buildings for each other.
 author: HWei
 database: true
@@ -11,7 +11,9 @@ commands:
     usage: 
       !!str "For Users:\n\
       \u00A7a/scr info \u00A7fView score info.\n\
-      \u00A7a/scr <score> \u00A7fGive a score.\n\
+      \u00A7a/scr <score> \u00A7fGive a score (range: 0.0 ~ 10.0).\n\
+      \u00A7a/scr list \u00A7fList recent open score signs.\n\
+      \u00A7a/scr tp <num> \u00A7fTeleport to a score sign in list.\n\
       For Admins:\n\
       \u00A7a/scr open \u00A7fOpen a score sign.\n\
       \u00A7a/scr admin \u00A7fView info for admins.\n\
@@ -20,10 +22,7 @@ commands:
       \u00A7a/scr clear \u00A7fClear all scores from viewers.\n\
       \u00A7a/scr maxreward <amount> \u00A7fSet max reward for author.\n\
       \u00A7a/scr close \u00A7fClose a score sign and distribute rewards.\n\
-      \u00A7a/scr reload \u00A7fReload config.yml.\n\
-      \u00A7a/scr listadmin \u00A7fList admins. (without PermissionsBukkit)\n\
-      \u00A7a/scr addadmin <name> \u00A7fAdd an admin. (without PermissionsBukkit)\n\
-      \u00A7a/scr removeadmin <name> \u00A7fRemove an admin. (without PermissionsBukkit)"
+      \u00A7a/scr reload \u00A7fReload config.yml."
 permissions:
   score.*:
     description: Gives access to all Score commands

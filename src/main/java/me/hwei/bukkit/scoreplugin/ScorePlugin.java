@@ -12,6 +12,7 @@ import me.hwei.bukkit.scoreplugin.data.ScoreAggregate;
 import me.hwei.bukkit.scoreplugin.data.Work;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +21,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
@@ -37,12 +39,10 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 	protected ScoreOutput output = null;
 	protected ScoreSignOperationFactory signOperationFactory = null;
 	protected ScorePermissionManager permissionManager = null;
+	protected ScoreMoneyManager moneyManager = null;
 
 	@Override
 	public void onDisable() {
-		for(Player player : this.getServer().getOnlinePlayers()) {
-			this.permissionManager.RemoveAdmin(player);
-		}
 		this.output.ToConsole("Disabled.");
 	}
 
@@ -51,18 +51,15 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 		this.configuation = new ScoreConfiguation(this.getConfiguration());
 		this.output = new ScoreOutput(this.getServer().getLogger(), this.getDescription().getName(), this.getServer());
 		this.setupDatabase();
-		this.permissionManager = new ScorePermissionManager(this.getDescription().getPermissions(), this.configuation.getAdminList(), this);
-		ScoreMoneyManager moneyManager = new ScoreMoneyManager(this.getServer().getPluginManager(), this.output);
-		this.signOperationFactory = new ScoreSignOperationFactory(output, this.getDatabase(), this.permissionManager, this.configuation, moneyManager);
+		ScorePermissionManager permissionManager = new ScorePermissionManager(this.getDescription().getPermissions());
+		this.moneyManager = new ScoreMoneyManager(this.getServer().getPluginManager(), this.output);
+		this.signOperationFactory = new ScoreSignOperationFactory(output, this.getDatabase(), permissionManager, this.configuation, this.moneyManager);
 
 		this.getCommand("score").setExecutor(this);
 		
 		PluginManager pluginManager = this.getServer().getPluginManager();
 		pluginManager.registerEvent(Event.Type.PLAYER_INTERACT, this, this, Priority.Normal, this);
 		pluginManager.registerEvent(Event.Type.BLOCK_BREAK, this, this, Priority.Normal, this);
-		pluginManager.registerEvent(Event.Type.PLAYER_JOIN, permissionManager, Priority.Normal, this);
-		pluginManager.registerEvent(Event.Type.PLAYER_QUIT, permissionManager, Priority.Normal, this);
-		pluginManager.registerEvent(Event.Type.PLAYER_KICK, permissionManager, Priority.Normal, this);
 		pluginManager.registerEvent(Event.Type.PLUGIN_ENABLE, moneyManager, Priority.Monitor, this);
 		pluginManager.registerEvent(Event.Type.PLUGIN_DISABLE, moneyManager, Priority.Monitor, this);
 		     
@@ -71,6 +68,8 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		Player player = null;
+		
 		if(args.length == 0) {
 			this.output.ToCommandSender(sender, command.getDescription());
 			return true;
@@ -85,59 +84,94 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 				this.output.ToCommandSender(sender, "Config reloaded.");
 				return true;
 			}
-			if(args[0].equalsIgnoreCase("listadmin")) {
-				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.ADMIN)) {
+			
+		}
+		
+		if(args.length == 1 || args.length == 2) {
+			if(args[0].equalsIgnoreCase("list")) {
+				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.USE)) {
 					this.output.ToCommandSender(sender, "Do not have permissions.");
 					return true;
 				}
-				StringBuilder sb = new StringBuilder();
-				for(String name : this.configuation.getAdminList()) {
-					sb.append(name);
-					sb.append(' ');
+				int pageSize = 10;
+				if(args.length == 2) {
+					try {
+						pageSize = Integer.parseInt(args[1]);
+						if(pageSize <= 0) {
+							pageSize = 10;
+						}
+					} catch(NumberFormatException e) {
+					}
 				}
-				this.output.ToCommandSender(sender, sb.toString());
+				List<Work> recent_open_list = this.getDatabase()
+						.find(Work.class)
+						.where()
+						.eq("reward", null)
+						.orderBy("work_id desc")
+						.setMaxRows(pageSize)
+						.findList();
+				for(int i=0; i<recent_open_list.size(); ++i) {
+					this.output.ToCommandSender(sender, "" + (i + 1) + ". "
+							+ ChatColor.GREEN + recent_open_list.get(i).getName() + ChatColor.WHITE
+							+ " author: "
+							+ ChatColor.DARK_GREEN + recent_open_list.get(i).getAuthor());
+				}
 				return true;
 			}
 		}
+		
 		if(args.length == 2) {
-			if(args[0].equalsIgnoreCase("addadmin")) {
-				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.ADMIN)) {
+			if(args[0].equalsIgnoreCase("tp")) {
+				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.USE)) {
 					this.output.ToCommandSender(sender, "Do not have permissions.");
 					return true;
 				}
-				Player newAdmin = this.getServer().getPlayer(args[1]);
-				if(newAdmin == null) {
-					this.output.ToCommandSender(sender, "Can not find player " + ChatColor.GREEN + args[1] + ChatColor.WHITE + ".");
-					return true;
-				} else {
-					this.permissionManager.AddAdmin(newAdmin);
-					this.configuation.SaveAdminList();
-					this.output.ToCommandSender(sender, "Added " + ChatColor.GREEN + args[1] + ChatColor.WHITE + " to scores admin.");
+				if(!(sender instanceof Player)) {
+					this.output.ToCommandSender(sender, "Can not teleport you.");
 					return true;
 				}
-			}
-			if(args[0].equalsIgnoreCase("removeadmin")) {
-				if(!this.permissionManager.HasPermission(sender, ScorePermissionType.ADMIN)) {
-					this.output.ToCommandSender(sender, "Do not have permissions.");
+				int tpId = -1;
+				try {
+					tpId = Integer.parseInt(args[1]);
+					if(tpId <= 0) {
+						return false;
+					}
+				} catch(NumberFormatException e) {
+					return false;
+				}
+				Work work = this.getDatabase()
+					.find(Work.class)
+					.where()
+					.eq("reward", null)
+					.orderBy("work_id desc")
+					.setFirstRow(tpId - 1)
+					.setMaxRows(1)
+					.findUnique();
+				if(work == null) {
+					this.output.ToCommandSender(sender, "Teleport id " + tpId + " does not exist.");
 					return true;
 				}
-				Player oldAdmin = this.getServer().getPlayer(args[1]);
-				if(oldAdmin == null) {
-					this.output.ToCommandSender(sender, "Can not find player " + ChatColor.GREEN + args[1] + ChatColor.WHITE + ".");
-					return true;
-				} else {
-					this.permissionManager.RemoveAdmin(oldAdmin);
-					this.configuation.SaveAdminList();
-					this.output.ToCommandSender(sender, "Removed " + ChatColor.GREEN + args[1] + ChatColor.WHITE + " from scores admin.");
-					return true;
+				player = (Player)sender;
+				if(this.configuation.getTp_price() != 0.0) {
+					if(!this.moneyManager.TakeMoney(player.getName(), this.configuation.getTp_price())) {
+						this.output.ToPlayer(player, "You should have at least " + ChatColor.GREEN
+								+ this.moneyManager.Format(this.configuation.getTp_price())
+								+ ChatColor.WHITE + " for teleport." );
+						return true;
+					}
 				}
+				Location l = new Location(player.getWorld(), work.getPos_x(), work.getPos_y(), work.getPos_z());
+				player.teleport(l);
+				this.output.ToPlayer(player, "Teleporting to " + ChatColor.GREEN + work.getName() + ChatColor.WHITE + " ...");
+				return true;
 			}
 		}
 		
-		Player player = null;
+		
 		if(sender instanceof Player) {
 			player = (Player)sender;
 		}
+		
 		if(player == null)
 			return false;
 		

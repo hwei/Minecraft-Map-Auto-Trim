@@ -22,7 +22,7 @@ Required:
 
 Optional:
 
-* PermissionBukkit (There is an internal permissions system for Score plugin itself.)
+* PermissionBukkit
 
 
 Usage
@@ -44,6 +44,8 @@ Commands
 
     /scr info View score info.
     /scr <score> Give a score.
+    /scr list List recent open score signs.
+    /scr tp <num> Teleport to a score sign in list.
 
 ### For Admins
 
@@ -55,9 +57,6 @@ Commands
     /scr maxreward <amount> Set max reward for author.
     /scr close Close a score sign and distribute rewards.
     /scr reload Reload config.yml.
-    /scr listadmin List admins. (For servers without PermissionsBukkit)
-    /scr addadmin <name> Add an admin. (For servers without PermissionsBukkit)
-    /scr removeadmin <name> Remove an admin. (For servers without PermissionsBukkit)
 
 
 Permissions
@@ -92,8 +91,3 @@ config.yml example
     viewer_score_threshold: 1.0
     # If the score of auther is less than this, he will win no money.
     auther_score_threshold: 6.0
-    # If do not have PermissionsBukkit plugin, set score admins here.
-    admins:
-    - HWei_just_example_please_remove_this
-    - jagt_just_example_please_remove_this
-
