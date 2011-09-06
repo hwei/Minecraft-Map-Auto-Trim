@@ -165,7 +165,7 @@ public class ScoreSignOperationFactory {
 		if(work.getReward() == null) {
 			sign.setLine(2, "" + ChatColor.DARK_RED + "pending");
 		} else {
-			sign.setLine(2, String.format("%.1f", score));
+			sign.setLine(2, String.format("%.2f", score));
 		}
 
 		sign.setLine(3, "" + ChatColor.DARK_GRAY + work.getAuthor());
@@ -219,7 +219,7 @@ public class ScoreSignOperationFactory {
 					return true;
 				} else {
 					ScoreSignOperationFactory.this.output.ToPlayer(this.player, String.format(
-							"You have given it a score of " + ChatColor.GREEN + "%.1f" + ChatColor.WHITE + ".", score.getScore()));
+							"You have given it a score of " + ChatColor.GREEN + "%.2f" + ChatColor.WHITE + ".", score.getScore()));
 					return true;
 				}
 			} else {
@@ -232,7 +232,7 @@ public class ScoreSignOperationFactory {
 					ScoreSignOperationFactory.this.output.ToPlayer(this.player, 
 							"You have given it a score of "
 							+ ChatColor.GREEN
-							+ String.format("%.1f", score.getScore())
+							+ String.format("%.2f", score.getScore())
 							+ ChatColor.WHITE
 							+ ", and won "+ ChatColor.GREEN
 							+ ScoreSignOperationFactory.this.moneyManager.Format(score.getReward())
@@ -290,7 +290,9 @@ public class ScoreSignOperationFactory {
 				work.setPos_z(sign.getZ());
 				ScoreSignOperationFactory.this.database.save(work);
 				ScoreSignOperationFactory.this.setSign(work, sign);
-				ScoreSignOperationFactory.this.output.ToPlayer(this.player, "Successfully opened.");
+				ScoreSignOperationFactory.this.output.ToAll("A new score sign opened! Name: "
+						+ ChatColor.GREEN + work.getName() + ChatColor.WHITE
+						+ ", Author: " + ChatColor.GREEN + work.getAuthor() + ChatColor.WHITE + ".");
 			} else {
 				ScoreSignOperationFactory.this.setSign(work, sign);
 				ScoreSignOperationFactory.this.output.ToPlayer(this.player, "Already open.");
@@ -355,10 +357,17 @@ public class ScoreSignOperationFactory {
 					score.setWork_id(work.getWork_id());
 					score.setViewer(this.player.getName());
 					ScoreSignOperationFactory.this.database.save(score);
-					ScoreSignOperationFactory.this.output.ToPlayer(this.player,
-							"Gave score of "
-							+ ChatColor.GREEN + String.format("%.1f", this.scoreNumber) + ChatColor.WHITE + ". Cost "
-							+ ChatColor.GREEN + moneyManager.Format(price) + ChatColor.WHITE + ".");
+					ScoreSignOperationFactory.this.output.ToPlayer(this.player, 
+							"You have given a score of "
+							+ ChatColor.GREEN + String.format("%.2f", this.scoreNumber) + ChatColor.WHITE
+							+ " ).");
+					ScoreSignOperationFactory.this.output.ToAll(
+							"" + ChatColor.GREEN + this.player.getName() + ChatColor.WHITE
+							+ " has given a score to "
+							+ ChatColor.GREEN + work.getName() + ChatColor.WHITE
+							+ " ( author: " + ChatColor.GREEN + work.getAuthor() + ChatColor.WHITE
+							+ " ).");
+					ScoreSignOperationFactory.this.output.ToPlayer(player, "Cost: " + ChatColor.GREEN + moneyManager.Format(price) + ChatColor.WHITE + ".");
 				} else {
 					ScoreSignOperationFactory.this.output.ToPlayer(this.player, "You do not have enough money to give score.");
 				}
@@ -369,8 +378,8 @@ public class ScoreSignOperationFactory {
 				ScoreSignOperationFactory.this.database.save(score);
 				ScoreSignOperationFactory.this.output.ToPlayer(this.player,
 						String.format("Changed score from "
-						+ ChatColor.GREEN + "%.1f" + ChatColor.WHITE
-						+ " to " + ChatColor.GREEN + "%.1f" + ChatColor.WHITE + ".",
+						+ ChatColor.GREEN + "%.2f" + ChatColor.WHITE
+						+ " to " + ChatColor.GREEN + "%.2f" + ChatColor.WHITE + ".",
 						oldScoreNumber, this.scoreNumber));
 				return true;
 			}
@@ -437,16 +446,16 @@ public class ScoreSignOperationFactory {
 						.findUnique();
 				}
 				String forcedScoreString = work.getScore() == null ? "none" :
-					String.format("%.1f", work.getScore());
+					String.format("%.2f", work.getScore());
 				double authorWillWin = work.getScore() == null ?
 							ScoreSignOperationFactory.this.calcAuthorReward(scoreAgg.getAverage(), work.getMax_reward()) :
 							ScoreSignOperationFactory.this.calcAuthorReward(work.getScore(), work.getMax_reward());
 				
 				ScoreSignOperationFactory.this.output.ToPlayer(this.player,
-						String.format("AVG: " + ChatColor.GREEN + "%.1f" + ChatColor.WHITE
-								+ ", MIN " + ChatColor.GREEN + "%.1f" + ChatColor.WHITE
-								+ ", MAX " + ChatColor.GREEN + "%.1f" + ChatColor.WHITE
-								+ ", SUM " + ChatColor.GREEN + "%.1f" + ChatColor.WHITE
+						String.format("AVG: " + ChatColor.GREEN + "%.2f" + ChatColor.WHITE
+								+ ", MIN " + ChatColor.GREEN + "%.2f" + ChatColor.WHITE
+								+ ", MAX " + ChatColor.GREEN + "%.2f" + ChatColor.WHITE
+								+ ", SUM " + ChatColor.GREEN + "%.2f" + ChatColor.WHITE
 								+ ", FORCE SCORE: "
 								+ ChatColor.GREEN + forcedScoreString + ChatColor.WHITE
 								+ ", MAX REWARD: " + ChatColor.GREEN + "%.2f" + ChatColor.WHITE
@@ -508,13 +517,13 @@ public class ScoreSignOperationFactory {
 				ScoreSignOperationFactory.this.database.save(work);
 				if(oldForcedScore == null) {
 					ScoreSignOperationFactory.this.output.ToPlayer(this.player, 
-							String.format("Set forced score " + ChatColor.GREEN + "%.1f" + ChatColor.WHITE + " .", this.scoreNumber));
+							String.format("Set forced score " + ChatColor.GREEN + "%.2f" + ChatColor.WHITE + " .", this.scoreNumber));
 				} else {
 					ScoreSignOperationFactory.this.output.ToPlayer(this.player, 
 							String.format("Change forced score from "
-									+ ChatColor.GREEN + "%.1f" + ChatColor.WHITE
+									+ ChatColor.GREEN + "%.2f" + ChatColor.WHITE
 									+ " to "
-									+ ChatColor.GREEN + "%.1f" + ChatColor.WHITE
+									+ ChatColor.GREEN + "%.2f" + ChatColor.WHITE
 									+ " .", oldForcedScore, this.scoreNumber));
 				}
 				return true;
@@ -690,11 +699,12 @@ public class ScoreSignOperationFactory {
 				work.setReward(autherReward);
 				ScoreSignOperationFactory.this.database.save(work);
 				if(moneyManager.GiveMoney(work.getAuthor(), autherReward)) {
-					output.ToPlayer(work.getAuthor(), "The score of your work "
+					output.ToAll("The score of "
 							+ ChatColor.GREEN + work.getName() + ChatColor.WHITE
+							+ " ( author: " + ChatColor.GREEN + work.getAuthor() + ChatColor.WHITE + " ) "
 							+ " is "
-							+ ChatColor.GREEN + String.format("%.1f", score) + ChatColor.WHITE
-							+ ". You have won "
+							+ ChatColor.GREEN + String.format("%.2f", score) + ChatColor.WHITE
+							+ ". " + ChatColor.GREEN + work.getAuthor() + ChatColor.WHITE + " has won "
 							+ ChatColor.GREEN + moneyManager.Format(autherReward) + ChatColor.WHITE
 							+ ".");
 				}
@@ -703,6 +713,7 @@ public class ScoreSignOperationFactory {
 					.where()
 					.eq("work_id", work.getWork_id())
 					.findList();
+				Score bestViewerScore = null;
 				for(Score viewerScore : scoreList) {
 					double viewerReward = ScoreSignOperationFactory.this.calcViewerReward(score, viewerScore.getScore());
 					viewerScore.setReward(viewerReward);
@@ -710,15 +721,24 @@ public class ScoreSignOperationFactory {
 						output.ToPlayer(viewerScore.getViewer(), "The score of work "
 								+ ChatColor.GREEN + work.getName() + ChatColor.WHITE
 								+ " is "
-								+ ChatColor.GREEN + String.format("%.1f", score) + ChatColor.WHITE
+								+ ChatColor.GREEN + String.format("%.2f", score) + ChatColor.WHITE
 								+ ". "
 								+ "You have given score of "
-								+ ChatColor.GREEN + String.format("%.1f", viewerScore.getScore()) + ChatColor.WHITE
+								+ ChatColor.GREEN + String.format("%.2f", viewerScore.getScore()) + ChatColor.WHITE
 								+ ". You have won "
 								+ ChatColor.GREEN + moneyManager.Format(viewerReward) + ChatColor.WHITE
 								+ ".");
+						if(bestViewerScore == null || viewerScore.getReward() > bestViewerScore.getReward()) {
+							bestViewerScore = viewerScore;
+						}
 					}
 				}
+				if(bestViewerScore != null) {
+					output.ToAll("The best viewer is " + ChatColor.GREEN + bestViewerScore.getViewer() + ChatColor.WHITE
+							+ ". He / she has given a score of " + ChatColor.GREEN + bestViewerScore.getScore() + ChatColor.WHITE
+							+ " and won " + ChatColor.GREEN + moneyManager.Format(bestViewerScore.getReward()) + ChatColor.WHITE + ".");
+				}
+				
 				ScoreSignOperationFactory.this.database.save(scoreList);
 				
 				return true;
