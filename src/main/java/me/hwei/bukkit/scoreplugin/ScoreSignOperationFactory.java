@@ -360,14 +360,15 @@ public class ScoreSignOperationFactory {
 					ScoreSignOperationFactory.this.output.ToPlayer(this.player, 
 							"You have given a score of "
 							+ ChatColor.GREEN + String.format("%.2f", this.scoreNumber) + ChatColor.WHITE
-							+ " ).");
+							+ " , and paid "
+							+ ChatColor.GREEN + ScoreSignOperationFactory.this.moneyManager.Format(price) + ChatColor.WHITE
+							+ ".");
 					ScoreSignOperationFactory.this.output.ToAll(
 							"" + ChatColor.GREEN + this.player.getName() + ChatColor.WHITE
 							+ " has given a score to "
 							+ ChatColor.GREEN + work.getName() + ChatColor.WHITE
 							+ " ( author: " + ChatColor.GREEN + work.getAuthor() + ChatColor.WHITE
 							+ " ).");
-					ScoreSignOperationFactory.this.output.ToPlayer(player, "Cost: " + ChatColor.GREEN + moneyManager.Format(price) + ChatColor.WHITE + ".");
 				} else {
 					ScoreSignOperationFactory.this.output.ToPlayer(this.player, "You do not have enough money to give score.");
 				}

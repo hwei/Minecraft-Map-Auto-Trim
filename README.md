@@ -91,3 +91,5 @@ config.yml example
     viewer_score_threshold: 1.0
     # If the score of auther is less than this, he will win no money.
     auther_score_threshold: 6.0
+    # The price of teleporting to score sign.
+    tp_price: 100.0

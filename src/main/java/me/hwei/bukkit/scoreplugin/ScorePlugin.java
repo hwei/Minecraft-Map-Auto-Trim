@@ -51,9 +51,9 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 		this.configuation = new ScoreConfiguation(this.getConfiguration());
 		this.output = new ScoreOutput(this.getServer().getLogger(), this.getDescription().getName(), this.getServer());
 		this.setupDatabase();
-		ScorePermissionManager permissionManager = new ScorePermissionManager(this.getDescription().getPermissions());
+		this.permissionManager = new ScorePermissionManager(this.getDescription().getPermissions());
 		this.moneyManager = new ScoreMoneyManager(this.getServer().getPluginManager(), this.output);
-		this.signOperationFactory = new ScoreSignOperationFactory(output, this.getDatabase(), permissionManager, this.configuation, this.moneyManager);
+		this.signOperationFactory = new ScoreSignOperationFactory(output, this.getDatabase(), this.permissionManager, this.configuation, this.moneyManager);
 
 		this.getCommand("score").setExecutor(this);
 		
@@ -110,6 +110,10 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 						.orderBy("work_id desc")
 						.setMaxRows(pageSize)
 						.findList();
+				if(recent_open_list == null) {
+					this.output.ToConsole("null erro");
+					return true;
+				}
 				for(int i=0; i<recent_open_list.size(); ++i) {
 					this.output.ToCommandSender(sender, "" + (i + 1) + ". "
 							+ ChatColor.GREEN + recent_open_list.get(i).getName() + ChatColor.WHITE
@@ -151,18 +155,26 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 					this.output.ToCommandSender(sender, "Teleport id " + tpId + " does not exist.");
 					return true;
 				}
+				
 				player = (Player)sender;
-				if(this.configuation.getTp_price() != 0.0) {
-					if(!this.moneyManager.TakeMoney(player.getName(), this.configuation.getTp_price())) {
+				Location l = new Location(player.getWorld(), work.getPos_x() + 0.5, work.getPos_y() + 0.5, work.getPos_z() + 0.5);
+				double tp_price = this.configuation.getTp_price();
+				if(tp_price != 0.0) {
+					if(!this.moneyManager.TakeMoney(player.getName(), tp_price)) {
 						this.output.ToPlayer(player, "You should have at least " + ChatColor.GREEN
 								+ this.moneyManager.Format(this.configuation.getTp_price())
 								+ ChatColor.WHITE + " for teleport." );
 						return true;
 					}
+					player.teleport(l);
+					this.output.ToPlayer(player, "You have paid " + ChatColor.GREEN + this.moneyManager.Format(tp_price) + ChatColor.WHITE
+							+ " for teleporting to " + ChatColor.GREEN + work.getName() + ChatColor.WHITE + " .");
 				}
-				Location l = new Location(player.getWorld(), work.getPos_x(), work.getPos_y(), work.getPos_z());
-				player.teleport(l);
-				this.output.ToPlayer(player, "Teleporting to " + ChatColor.GREEN + work.getName() + ChatColor.WHITE + " ...");
+				else
+				{
+					player.teleport(l);
+					this.output.ToPlayer(player, "Teleporting to " + ChatColor.GREEN + work.getName() + ChatColor.WHITE + " .");
+				}
 				return true;
 			}
 		}
