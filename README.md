@@ -22,7 +22,7 @@ Required:
 
 Optional:
 
-* PermissionBukkit
+* A permissions plugin supporting SuperPerm, for example PermissionBukkit or PermissionEx
 
 
 Usage
