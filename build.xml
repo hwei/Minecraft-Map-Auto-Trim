@@ -18,7 +18,7 @@
 	</target>
 	
 	<target name="compile" depends="init">
-		<javac srcdir="${src}/main/java" destdir="${bin}" includeantruntime="false">
+		<javac srcdir="${src}/main/java" destdir="${bin}" includeantruntime="false" debug="on" debuglevel="lines,vars,source">
 			<classpath>
 				<pathelement location="${bukkit.jar}"/>
 				<pathelement location="${BOSEconomy7.jar}"/>
