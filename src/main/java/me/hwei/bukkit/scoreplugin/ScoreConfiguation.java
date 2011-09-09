@@ -10,12 +10,12 @@ public class ScoreConfiguation {
 	
 	public void Load() {
 		this.configuation.load();
-		this.price = this.configuation.getDouble("price", 0.0);
-		this.viewer_max_reward = this.configuation.getDouble("viewer_max_reward", 0.0);
-		this.auther_max_reward = this.configuation.getDouble("auther_max_reward", 0.0);
-		this.viewer_score_threshold = this.configuation.getDouble("viewer_score_threshold", 0.0);
-		this.auther_score_threshold = this.configuation.getDouble("auther_score_threshold", 0.0);
-		this.tp_price = this.configuation.getDouble("tp_price", 0.0);
+		this.price = this.configuation.getDouble("price", 25.0);
+		this.viewer_max_reward = this.configuation.getDouble("viewer_max_reward", 500.0);
+		this.auther_max_reward = this.configuation.getDouble("auther_max_reward", 5000.0);
+		this.viewer_score_threshold = this.configuation.getDouble("viewer_score_threshold", 1.0);
+		this.auther_score_threshold = this.configuation.getDouble("auther_score_threshold", 6.0);
+		this.tp_price = this.configuation.getDouble("tp_price", 50.0);
 	}
 	
 	protected Configuration configuation = null;

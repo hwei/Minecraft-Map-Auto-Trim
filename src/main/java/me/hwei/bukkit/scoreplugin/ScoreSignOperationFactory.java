@@ -114,6 +114,8 @@ public class ScoreSignOperationFactory {
 		double score_threshold = this.configuation.getAuther_score_threshold();
 		if(score > score_threshold) {
 			return maxReward * (score - score_threshold) / (10.0 - score_threshold);
+		} else if(score_threshold == 10.0) {
+			return score == 10.0 ? maxReward : 0.0;
 		} else {
 			return 0.0;
 		}
@@ -125,6 +127,8 @@ public class ScoreSignOperationFactory {
 		
 		if(diff > score_threshold) {
 			return 0.0;
+		} else if(score_threshold <= 0.0) {
+			return diff == 0.0 ? max_reword : 0.0;
 		} else {
 			return max_reword * (score_threshold - diff) / score_threshold;
 		}
