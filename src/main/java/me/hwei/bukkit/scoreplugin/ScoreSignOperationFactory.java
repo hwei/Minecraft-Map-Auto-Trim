@@ -693,8 +693,7 @@ public class ScoreSignOperationFactory {
 						.findUnique();
 					score = scoreAgg.getAverage();
 				}
-				double autherMaxReward = ScoreSignOperationFactory.this.configuation.getAuther_max_reward();
-				double autherReward = ScoreSignOperationFactory.this.calcAuthorReward(score, autherMaxReward);
+				double autherReward = ScoreSignOperationFactory.this.calcAuthorReward(score, work.getMax_reward());
 				ScoreMoneyManager moneyManager = ScoreSignOperationFactory.this.moneyManager;
 				work.setScore(score);
 				work.setReward(autherReward);
@@ -838,7 +837,7 @@ public class ScoreSignOperationFactory {
 			if(work.getReward() == null) {
 				work.setMax_reward(this.amount);
 				ScoreSignOperationFactory.this.database.save(work);
-				String.format("Set max reward to " + ChatColor.GREEN
+				ScoreSignOperationFactory.this.output.ToPlayer(this.player, "Set max reward to " + ChatColor.GREEN
 						+ ScoreSignOperationFactory.this.moneyManager.Format(amount)
 						+ ChatColor.WHITE + ".");
 				return true;
