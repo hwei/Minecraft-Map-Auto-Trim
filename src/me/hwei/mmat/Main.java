@@ -104,10 +104,13 @@ public class Main {
 					rfile.close();
 				}
 			}
-			System.out.println("All chunks count: " + allChunkSet.size());
-			System.out.println("Remain chunks count: " + remainChunkSet.size());
+			int allChunksCount = allChunkSet.size();
+			int remainChunksCount = remainChunkSet.size();
+			System.out.println("All chunks count: " + allChunksCount);
+			System.out.println("Remain chunks count: " + remainChunksCount);
 			allChunkSet.removeAll(remainChunkSet);
-			System.out.println("Delete chunks count: " + allChunkSet.size());
+			int deleteChunksCount = allChunkSet.size();
+			System.out.println("Delete chunks count: " + deleteChunksCount);
 			
 			for(IntPair pos : allChunkSet) {
 				int cx = pos.getLeft();
@@ -116,6 +119,10 @@ public class Main {
 			}
 			
 			RegionFileCache.clear();
+			
+			System.out.println("All chunks count: " + allChunksCount);
+			System.out.println("Delete chunks count: " + deleteChunksCount);
+			System.out.println("Remain chunks count: " + remainChunksCount);
 			
 		} catch (IOException e) {
 			e.printStackTrace();
