@@ -8,10 +8,10 @@ Features
 --------
 
 * Detect chunks which contain no building and delete them.
-* Can dilate remain region for a certain chunks.
+* Can dilate remain region for a certain number of chunks.
 
 
 Usage
 -----
 
-    mmat -w <world path> [-d <dilation size>]
+    java -jar mmat.jar -w <world path> [-d <dilation size>]
