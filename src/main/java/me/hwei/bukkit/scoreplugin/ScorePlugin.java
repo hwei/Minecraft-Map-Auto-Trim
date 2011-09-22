@@ -110,14 +110,18 @@ public class ScorePlugin extends JavaPlugin implements Listener, EventExecutor, 
 						.setMaxRows(pageSize)
 						.findList();
 				if(recent_open_list == null) {
-					this.output.ToConsole("null erro");
+					this.output.ToConsole("database error");
 					return true;
 				}
-				for(int i=0; i<recent_open_list.size(); ++i) {
-					this.output.ToCommandSender(sender, "" + (i + 1) + ". "
-							+ ChatColor.GREEN + recent_open_list.get(i).getName() + ChatColor.WHITE
-							+ " author: "
-							+ ChatColor.DARK_GREEN + recent_open_list.get(i).getAuthor());
+				if(recent_open_list.size() == 0) {
+					this.output.ToCommandSender(sender, "No open score sign now.");
+				} else {
+					for(int i=0; i<recent_open_list.size(); ++i) {
+						this.output.ToCommandSender(sender, "" + (i + 1) + ". "
+								+ ChatColor.GREEN + recent_open_list.get(i).getName() + ChatColor.WHITE
+								+ " author: "
+								+ ChatColor.DARK_GREEN + recent_open_list.get(i).getAuthor());
+					}
 				}
 				return true;
 			}
