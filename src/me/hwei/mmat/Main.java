@@ -42,7 +42,7 @@ public class Main {
 		}
 		
 		if(basePathStr == null) {
-			System.out.println("Minecraft map auto trim. Author: HWei.");
+			System.out.println("Minecraft map auto trim v0.1. Author: HWei.");
 			System.out.println("Usage: java -jar mmat.jar -w <world path> [-d <dilation size>]");
 			return;
 		}
