@@ -4,20 +4,12 @@
 	<property name="src.dir" value="${basedir}/src"/>
 	<property name="build.dir" value="${basedir}/build"/>
 	<property name="dist.dir" value="${basedir}/dist"/>
-	<property name="lib.dir" value="${basedir}/lib"/>
 	<property name="jar.file" value="${product}.jar"/>
 	
-
-	<path id="classpath">
-		<fileset dir="${lib.dir}">
-			<include name="**/*.jar"/>
-		</fileset>
-	</path>
 
 	<target name="clean">
 		<echo>clean build dir</echo>
 		<delete dir="${build.dir}" quiet="true"/>
-		<delete file="${lib.dir}/${jar.file}" quiet="true"/>
 	</target>
 
 	<target name="init" depends="clean">
@@ -26,9 +18,8 @@
 
 	<target name="compile" depends="init">
 		<echo>compile the source</echo>
-		<javac srcdir="${src.dir}" destdir="${build.dir}">
+		<javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false">
 			<include name="**/*.java"/>
-			<classpath refid="classpath"/>
 		</javac>
 	</target>
 
@@ -44,7 +35,5 @@
 	</target>
 
 	<target name="run" depends="jar">
-		<java jar="${lib.dir}/${jar.file}" fork="yes">
-		</java>
 	</target>
 </project>

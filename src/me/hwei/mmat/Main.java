@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,6 +22,8 @@ public class Main {
 	public static void main(String[] args) {
 		String basePathStr = null;
 		int DilationSize = 3;
+		boolean[] preservedIds = new boolean[256];
+		boolean userDefinedPreservedId = false;
 		
 		
 		for(int i=0; i<args.length; ++i) {
@@ -38,12 +41,77 @@ public class Main {
 					}
 				} catch (NumberFormatException e) {
 				}
+			} else if(args[i].equals("-p")) {
+				if(++i >= args.length)
+					break;
+				String[] ids = args[i].split(",");
+				for(String id : ids) {
+					try {
+						byte blockId = Byte.parseByte(id, 10);
+						preservedIds[blockId] = true;
+					} catch (NumberFormatException e) {
+					}
+				}
+				userDefinedPreservedId = true;
 			}
+		}
+		
+		if(userDefinedPreservedId == false) {
+			preservedIds[5] = true;
+			preservedIds[19] = true;
+			preservedIds[20] = true;
+			preservedIds[22] = true;
+			preservedIds[23] = true;
+			preservedIds[25] = true;
+			preservedIds[26] = true;
+			preservedIds[27] = true;
+			preservedIds[28] = true;
+			preservedIds[29] = true;
+			preservedIds[33] = true;
+			preservedIds[34] = true;
+			preservedIds[35] = true;
+			preservedIds[36] = true;
+			preservedIds[41] = true;
+			preservedIds[42] = true;
+			preservedIds[43] = true;
+			preservedIds[44] = true;
+			preservedIds[45] = true;
+			preservedIds[46] = true;
+			preservedIds[47] = true;
+			preservedIds[53] = true;
+			preservedIds[55] = true;
+			preservedIds[57] = true;
+			preservedIds[59] = true;
+			preservedIds[60] = true;
+			preservedIds[63] = true;
+			preservedIds[64] = true;
+			preservedIds[65] = true;
+			preservedIds[66] = true;
+			preservedIds[67] = true;
+			preservedIds[68] = true;
+			preservedIds[69] = true;
+			preservedIds[70] = true;
+			preservedIds[71] = true;
+			preservedIds[72] = true;
+			preservedIds[75] = true;
+			preservedIds[76] = true;
+			preservedIds[77] = true;
+			preservedIds[80] = true;
+			preservedIds[84] = true;
+			preservedIds[85] = true;
+			preservedIds[87] = true;
+			preservedIds[88] = true;
+			preservedIds[89] = true;
+			preservedIds[91] = true;
+			preservedIds[92] = true;
+			preservedIds[93] = true;
+			preservedIds[94] = true;
+			preservedIds[96] = true;
 		}
 		
 		if(basePathStr == null) {
 			System.out.println("Minecraft map auto trim v0.1. Author: HWei.");
-			System.out.println("Usage: java -jar mmat.jar -w <world path> [-d <dilation size>]");
+			System.out.println("Usage: java -jar mmat.jar -w <world path> [-d <dilation size>] [-p <user defined preserve block id list (spliter: comma)>]");
 			return;
 		}
 		
@@ -90,7 +158,7 @@ public class Main {
 							IntPair pos = new IntPair(cx, cz);
 							allChunkSet.add(pos);
 							ByteArrayTag blocksTag = (ByteArrayTag)levelTag.getValue().get("Blocks");
-							if(toRemain(blocksTag.getValue())) {
+							if(toRemain(blocksTag.getValue(), preservedIds)) {
 								//dilate remain region
 								for(int dx=-DilationSize; dx<=DilationSize; ++dx) {
 									for(int dz=-DilationSize; dz<=DilationSize; ++dz) {
@@ -146,26 +214,18 @@ public class Main {
 	}
 	
 	// whether to remain a chunk.
-	private static boolean toRemain(byte[] blocksData) {
+	private static boolean toRemain(byte[] blocksData, boolean[] preservedIds) {
 		for(int x=0; x<16; ++x) {
-			for(int y=0; y<128; ++y) {
-				for(int z=0; z<16; ++z) {
-					byte blockID = blocksData[ y + ( z * 128 + ( x * 128 * 16 ) ) ];
-					switch(blockID) {
-						case 20:
-						case 50:
-						case 63:
-						case 68:
-						case 89:
-						case 91:
-							return true;
-						default:
-							break;
-					}
+			int a = x * 128 * 16;
+			for(int z=0; z<16; ++z) {
+				int b = z * 128 + a;
+				for(int y=0; y<128; ++y) {
+					byte blockID = blocksData[ y + b ];
+					if(preservedIds[blockID])
+						return true;
 				}
 			}
 		}
-		
 		return false;
 	}
 
