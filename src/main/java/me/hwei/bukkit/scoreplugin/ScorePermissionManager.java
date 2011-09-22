@@ -1,21 +1,13 @@
 package me.hwei.bukkit.scoreplugin;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionAttachment;
-import org.bukkit.plugin.Plugin;
 
 public class ScorePermissionManager {
-	public ScorePermissionManager(ArrayList<Permission> permissions) {
+	public ScorePermissionManager(List<Permission> permissions) {
 		for(Permission permission : permissions) {
 			if(permission.getName().equalsIgnoreCase("score.use")) {
 				this.permissionUse = permission;
