@@ -151,14 +151,13 @@ public class Main {
 			for(int y=0; y<128; ++y) {
 				for(int z=0; z<16; ++z) {
 					byte blockID = blocksData[ y + ( z * 128 + ( x * 128 * 16 ) ) ];
-					Material material = Material.getMaterial((int)blockID);
-					switch(material) {
-						case GLASS:
-						case TORCH:
-						case JACK_O_LANTERN:
-						case GLOWSTONE:
-						case SIGN_POST:
-						case WALL_SIGN:
+					switch(blockID) {
+						case 20:
+						case 50:
+						case 63:
+						case 68:
+						case 89:
+						case 91:
 							return true;
 						default:
 							break;
