@@ -14,7 +14,6 @@ public class ScoreMoneyManager extends ServerListener  {
 	public ScoreMoneyManager(PluginManager pluginManager, ScoreOutput output) {
 		this.pluginManager = pluginManager;
 		this.output = output;
-		this.methods = new Methods();
 	}
 	
 	public String Format(double amount) {
@@ -49,8 +48,8 @@ public class ScoreMoneyManager extends ServerListener  {
 	
     @Override
     public void onPluginDisable(PluginDisableEvent event) {
-        if (this.methods != null && this.methods.hasMethod()) {
-            Boolean check = this.methods.checkDisabled(event.getPlugin());
+        if (Methods.hasMethod()) {
+            Boolean check = Methods.checkDisabled(event.getPlugin());
 
             if(check) {
                 this.method = null;
@@ -61,15 +60,18 @@ public class ScoreMoneyManager extends ServerListener  {
 
     @Override
     public void onPluginEnable(PluginEnableEvent event) {
-    	if (!this.methods.hasMethod()) {
-            if(this.methods.setMethod(event.getPlugin())) {
-            	this.method = this.methods.getMethod();
-            	this.output.ToConsole("Payment method found (" + this.method.getName() + " version: " + this.method.getVersion() + ").");
+    	if (!Methods.hasMethod()) {
+            if(Methods.setMethod(this.pluginManager)) {
+            	this.method = Methods.getMethod();
+            	if(this.method == null) {
+            		this.output.ToConsole("Payment method not found.");
+            	} else {
+            		this.output.ToConsole("Payment method found (" + this.method.getName() + " version: " + this.method.getVersion() + ").");
+            	}
             }
         }
     }
     
-    protected Methods methods;
     protected Method method;
     protected PluginManager pluginManager;
     protected ScoreOutput output;
