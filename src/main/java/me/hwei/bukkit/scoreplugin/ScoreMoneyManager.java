@@ -5,9 +5,9 @@ import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListener;
 import org.bukkit.plugin.PluginManager;
 
-import com.nijikokun.register.payment.Method;
-import com.nijikokun.register.payment.Method.MethodAccount;
-import com.nijikokun.register.payment.Methods;
+import com.nijikokun.register_1_2.payment.Method;
+import com.nijikokun.register_1_2.payment.Methods;
+import com.nijikokun.register_1_2.payment.Method.MethodAccount;
 
 public class ScoreMoneyManager extends ServerListener  {
 

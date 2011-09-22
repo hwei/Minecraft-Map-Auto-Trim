@@ -1,6 +1,6 @@
-package com.nijikokun.register.payment.methods;
+package com.nijikokun.register_1_2.payment.methods;
 
-import com.nijikokun.register.payment.Method;
+import com.nijikokun.register_1_2.payment.Method;
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.api.Economy;
 import com.earth2me.essentials.api.NoLoanPermittedException;

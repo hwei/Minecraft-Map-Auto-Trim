@@ -1,4 +1,4 @@
-package com.nijikokun.register.payment;
+package com.nijikokun.register_1_2.payment;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -42,13 +42,13 @@ public class Methods {
      * Implement all methods along with their respective name & class.
      */
     private static void _init() {
-        addMethod("iConomy", new com.nijikokun.register.payment.methods.iCo6());
-        addMethod("iConomy", new com.nijikokun.register.payment.methods.iCo5());
-        addMethod("iConomy", new com.nijikokun.register.payment.methods.iCo4());
-        addMethod("BOSEconomy", new com.nijikokun.register.payment.methods.BOSE6());
-        addMethod("BOSEconomy", new com.nijikokun.register.payment.methods.BOSE7());
-        addMethod("Essentials", new com.nijikokun.register.payment.methods.EE17());
-        addMethod("Currency", new com.nijikokun.register.payment.methods.MCUR());
+        addMethod("iConomy", new com.nijikokun.register_1_2.payment.methods.iCo6());
+        addMethod("iConomy", new com.nijikokun.register_1_2.payment.methods.iCo5());
+        addMethod("iConomy", new com.nijikokun.register_1_2.payment.methods.iCo4());
+        addMethod("BOSEconomy", new com.nijikokun.register_1_2.payment.methods.BOSE6());
+        addMethod("BOSEconomy", new com.nijikokun.register_1_2.payment.methods.BOSE7());
+        addMethod("Essentials", new com.nijikokun.register_1_2.payment.methods.EE17());
+        addMethod("Currency", new com.nijikokun.register_1_2.payment.methods.MCUR());
         Dependencies.add("MultiCurrency");
     }
 

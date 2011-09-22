@@ -1,4 +1,4 @@
-package com.nijikokun.register.payment;
+package com.nijikokun.register_1_2.payment;
 
 import org.bukkit.plugin.Plugin;
 
