@@ -1,8 +1,6 @@
 package me.hwei.bukkit.scoreplugin;
 
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
