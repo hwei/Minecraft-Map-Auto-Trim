@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="GBK" standalone="no"?>
+<jardesc>
+    <jar path="mmat.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/Minecraft-Map-Auto-Trim/mmat.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="false" mainClassHandleIdentifier="=Minecraft-Map-Auto-Trim/src&lt;me.hwei.mmat{Main.java[Main" manifestLocation="/Minecraft-Map-Auto-Trim/META-INF/MANIFEST.MF" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <file path="/Minecraft-Map-Auto-Trim/.classpath"/>
+        <javaElement handleIdentifier="=Minecraft-Map-Auto-Trim/src"/>
+        <file path="/Minecraft-Map-Auto-Trim/.project"/>
+        <file path="/Minecraft-Map-Auto-Trim/README.md"/>
+        <file path="/Minecraft-Map-Auto-Trim/build.xml"/>
+        <file path="/Minecraft-Map-Auto-Trim/LICENSE_JNBT.TXT"/>
+    </selectedElements>
+</jardesc>
