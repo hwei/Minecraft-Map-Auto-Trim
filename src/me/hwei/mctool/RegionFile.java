@@ -1,4 +1,4 @@
-package me.hwei.mmat;
+package me.hwei.mctool;
 /*
  ** 2011 January 5
  **

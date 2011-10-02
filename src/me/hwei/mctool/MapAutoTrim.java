@@ -1,4 +1,4 @@
-package me.hwei.mmat;
+package me.hwei.mctool;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -13,7 +13,7 @@ import org.jnbt.CompoundTag;
 import org.jnbt.IntTag;
 import org.jnbt.NBTInputStream;
 
-public class Main {
+public class MapAutoTrim {
 
 	/**
 	 * @param args
