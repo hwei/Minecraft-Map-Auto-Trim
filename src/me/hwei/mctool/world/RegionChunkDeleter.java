@@ -27,20 +27,4 @@ public class RegionChunkDeleter extends RegionFileBase {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void close() throws IOException {
-        file.close();
-        boolean isEmpty = true;
-        for(int i=2; i<sectorFree.size(); ++i) {
-        	if(sectorFree.get(i) == false) {
-        		isEmpty = false;
-        		break;
-        	}
-        }
-        if(isEmpty) {
-        	this.fileName.deleteOnExit();
-        	debugln("delete on exit: " + this.fileName.getName());
-        }
-    }
 }

@@ -68,7 +68,7 @@ public class WorldCache {
         }
 		deleter.delete(chunk.rx, chunk.rz);
 	}
-	protected synchronized void clearRegionCache() {
+	public synchronized void clearRegionCache() {
 		for (Reference<RegionFileBase> ref : regionCache.values()) {
             try {
                 if (ref.get() != null) {

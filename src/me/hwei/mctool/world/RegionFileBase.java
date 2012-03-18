@@ -77,6 +77,17 @@ public class RegionFileBase implements Closeable {
     @Override
     public void close() throws IOException {
         file.close();
+        boolean isEmpty = true;
+        for(int i=2; i<sectorFree.size(); ++i) {
+        	if(sectorFree.get(i) == false) {
+        		isEmpty = false;
+        		break;
+        	}
+        }
+        if(isEmpty) {
+        	this.fileName.deleteOnExit();
+        	debugln("Delete file: " + this.fileName.getName());
+        }
     }
     
     @Override

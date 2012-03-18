@@ -1,5 +1,6 @@
 package me.hwei.mctool.world;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.NbtIo;
 
-public class WorldStorage {
+public class WorldStorage implements Closeable {
 
 	protected static final int MCREGION_VERSION_ID = 0x4abc;
     protected static final int ANVIL_VERSION_ID = 0x4abd;
@@ -94,5 +95,22 @@ public class WorldStorage {
 			}
 		}
 		return chunks;
+	}
+	
+	@Override
+	public void close() {
+		this.worldCache.clearRegionCache();
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+	    try {
+	        close();
+	    } catch(Exception e) { 
+	    }
+	    
+	    finally {
+	        super.finalize();
+	    }
 	}
 }
