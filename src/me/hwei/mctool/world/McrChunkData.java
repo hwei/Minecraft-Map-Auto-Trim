@@ -42,7 +42,7 @@ public class McrChunkData implements IChunkData {
 		
 		@Override
 		public boolean hasNext() {
-			return pos >= CHUNK_SIZE;
+			return pos < CHUNK_SIZE;
 		}
 
 		@Override
