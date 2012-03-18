@@ -83,7 +83,7 @@ public class MapAutoTrim {
 		System.out.println("Done.");
 		
 		if(opt.dilationSize > 0) {
-			System.out.print("Dilating... ");
+			System.out.print("Dilating chunks... ");
 			progressReporter = new ProgressReporter(allChunks.size());
 			Iterator<Entry<IntPair, ChunkAndMarks>> iterEntry = chunkMap.entrySet().iterator();
 			while(iterEntry.hasNext()) {
@@ -109,7 +109,7 @@ public class MapAutoTrim {
 		int preservedCount = 0;
 		Iterator<ChunkAndMarks> iterChunkAndMarks = null;
 		iterChunkAndMarks = allChunkAndMarks.iterator();
-		System.out.print("Deleting... ");
+		System.out.print("Deleting chunks... ");
 		progressReporter = new ProgressReporter(allChunks.size());
 		while(iterChunkAndMarks.hasNext()) {
 			ChunkAndMarks cm = iterChunkAndMarks.next();
@@ -120,9 +120,12 @@ public class MapAutoTrim {
 			}
 			progressReporter.completOne();
 		}
+		System.out.println();
+		worldStorage.close();
 		System.out.println("Done.");
 		System.out.printf("\nAll complete. Remain %d - %d = %d trunks. (total - toDelete = remain)\n",
 				allChunkAndMarks.size(), allChunkAndMarks.size() - preservedCount, preservedCount);
+		
 	}
 	
 	static void printUsage() {
@@ -190,6 +193,7 @@ public class MapAutoTrim {
 						} catch (NumberFormatException e) {
 						}
 					}
+					opt.rectCut = true;
 				}
 			}
 			if(!userDefinedPreservedId) {
