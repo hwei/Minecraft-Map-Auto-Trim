@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="GB2312" standalone="no"?>
+<jardesc>
+    <jar path="/Users/huangwei/Desktop/mmat.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/mmat/genjar.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" mainClassHandleIdentifier="=mmat/src&lt;me.hwei.mctool{MapAutoTrim.java[MapAutoTrim" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=mmat/src"/>
+    </selectedElements>
+</jardesc>

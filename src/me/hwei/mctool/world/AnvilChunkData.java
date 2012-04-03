@@ -59,31 +59,43 @@ public class AnvilChunkData implements IChunkData {
 		return new BlockIterator();
 	}
 	
+	@Override
+	public Iterator<Integer> blockIterator(int yStart, int yEnd) {
+		return new BlockIterator(yStart, yEnd);
+	}
+
 	protected class BlockIterator implements Iterator<Integer> {
 		
-		protected int yBase;
-		protected int pos;
-		protected boolean hasNext;
-		
 		public BlockIterator() {
-			yBase = 0;
-			pos = 0;
-			for(;yBase < blocks.length && blocks[yBase] == null; ++yBase) {
-			}
-			hasNext = (yBase != blocks.length);
+			this.pos = 0;
+			this.end = blocks.length << 12;
+			jumpEmpty();
 		}
+		
+		public BlockIterator(int yStart, int yEnd) {
+			yStart = Math.max(yStart, 0);
+			yEnd = Math.min(yEnd, blocks.length << 4);
+			this.pos = yStart << 8;
+			this.end = yEnd << 8;
+			jumpEmpty();
+		}
+		
+		protected int pos;
+		protected int end;
 		
 		@Override
 		public boolean hasNext() {
-			return hasNext;
+			return pos < end;
 		}
 
 		@Override
 		public Integer next() {
-			int result = blocks[yBase][pos] & 0xff;
+			int yBase = pos >> 12;
+			int cubicPos = pos & 0xfff;
+			int result = blocks[yBase][cubicPos] & 0xff;
 			if(add[yBase] != null && add[yBase].length != 0) {
-				int slot = pos >> 1;
-		        int part = pos & 1;
+				int slot = cubicPos >> 1;
+		        int part = cubicPos & 1;
 		        if (part == 0) {
 		            result += (add[yBase][slot] & 0xf) << 8;
 		        } else {
@@ -91,16 +103,9 @@ public class AnvilChunkData implements IChunkData {
 		        }
 			}
 			++pos;
-			if(pos == SECTION_SIZE) {
-				pos = 0;
-				do
-				{
-					++yBase;
-				}while(yBase < blocks.length &&
-						(blocks[yBase] == null || blocks[yBase].length == 0));
-				hasNext = (yBase != blocks.length);
+			if((pos & 0xfff) == 0) {
+				jumpEmpty();
 			}
-			
 			return result;
 		}
 
@@ -108,6 +113,13 @@ public class AnvilChunkData implements IChunkData {
 		public void remove() {
 		}
 		
+		protected void jumpEmpty() {
+			int yBase = pos >> 12;
+			while(yBase < blocks.length && blocks[yBase] == null) {
+				++yBase;
+			}
+			pos = (yBase << 12) | (pos & 0xfff);
+		}
 	}
 
 	@Override

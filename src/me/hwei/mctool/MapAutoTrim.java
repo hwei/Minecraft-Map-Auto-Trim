@@ -47,12 +47,18 @@ public class MapAutoTrim {
 		System.out.println();
 		System.out.printf("Dilation size: %d\n", opt.dilationSize);
 		System.out.print("Cut rectangle: ");
-		if(opt.rectCut) {
+		if(opt.rect == null) {
+			System.out.println("(none)");
+		} else {
 			System.out.printf("minX=%d maxX=%d minZ=%d maxZ=%d\n",
 					opt.rect[0] * 16, opt.rect[1] * 16 + 15,
 					opt.rect[2] * 16, opt.rect[3] * 16 + 15);
-		} else {
+		} 
+		System.out.print("Y range: ");
+		if(opt.yRange == null) {
 			System.out.println("(none)");
+		} else {
+			System.out.printf("yBegin=%d yEnd=%d\n", opt.yRange[0], opt.yRange[1]);
 		}
 		System.out.println();
 		
@@ -69,7 +75,7 @@ public class MapAutoTrim {
 			cm.containPreservedBlock = chunkHandle.hasAnyBlock(opt.preservedIds);
 			cm.nearPreservedChunk = cm.containPreservedBlock;
 			IntPair pos = new IntPair(chunkHandle.getChunkX(), chunkHandle.getChunkZ());
-			if(opt.rectCut) {
+			if(opt.rect != null) {
 				if(pos.getLeft() < opt.rect[0] || pos.getLeft() > opt.rect[1]
 						|| pos.getLeft() < opt.rect[2] || pos.getRight() > opt.rect[3]) {
 					cm.outOfrange = true;
@@ -130,17 +136,18 @@ public class MapAutoTrim {
 	
 	static void printUsage() {
 		System.out.println("Minecraft Map Auto Trim. Help you delete unnecessary trunks.");
-		System.out.println("Version: 0.3 alpha, Author: hwei");
+		System.out.println("Version: 0.4, Author: hwei");
         System.out.println("");
         System.out.println("Usage:");
-        System.out.println("\tjava -jar mmat.jar -w <world path> [-d <dilation size>] [-p <id list>] [-r <rect minX,maxX,minZ,maxZ>]");
+        System.out.println("\tjava -jar mmat.jar -w <world path> [-d <dilation size>] [-p <id list>] [-r <minX,maxX,minZ,maxZ>] [-y <yBegin,yEnd>]");
         System.out.println("Where:");
-        System.out.println("\t<world path>\tPath to the world folders");
-        System.out.println("\t<dilation size>\tDilate preserved area to perserve more chunks around the chunks with \"perserve block\"");
-        System.out.println("\t<id list>\tDefine a list of \"perserve block\".If a chunk contains any \"perserve block\", it will be preserved.");
-        System.out.println("\t<rect>\tIf specified, all the chunks outside this rectangle will be forced to delete.");
+        System.out.println("\t-w <world path>\tPath to the world folders");
+        System.out.println("\t-d <dilation size>\tDilate preserved area to perserve more chunks around the chunks with \"perserve block\"");
+        System.out.println("\t-p <id list>\tDefine a list of \"perserve block\".If a chunk contains any \"perserve block\", it will be preserved.");
+        System.out.println("\t-r <minX,maxX,minZ,maxZ>\tIf specified, all the chunks outside this rectangle will be forced to delete.");
+        System.out.println("\t-y <yBegin,yEnd>\tIf specified, only scan this range of height.");
         System.out.println("Example:");
-        System.out.println("\tjava -jar mmat.jar -w ~/minecraft/world -d 3 -p 63,68 -r -1000,1000,-1000,1000");
+        System.out.println("\tjava -jar mmat.jar -w ~/minecraft/world -d 3 -p 63,68 -r -1000,1000,-1000,1000 -y 64,256");
         System.exit(1);
 	}
 	
@@ -149,8 +156,8 @@ public class MapAutoTrim {
 		public String mapPathStr = null;
 		public int dilationSize = 3;
 		public boolean[] preservedIds = new boolean[4096];
-		public boolean rectCut = false;
-		public int[] rect = new int[4];
+		public int[] rect = null;
+		public int[] yRange= null;
 		public static Options ReadArgs(String[] args) {
 			Options opt = new Options();
 			boolean userDefinedPreservedId = false;
@@ -187,13 +194,28 @@ public class MapAutoTrim {
 					String[] pos = args[i].split(",");
 					if(pos.length != 4)
 						break;
+					int[] rect = new int[4];
 					for(int j=0; j<4; ++j) {
 						try {
-							opt.rect[j] = Integer.parseInt(pos[j], 10) / 16;
+							rect[j] = Integer.parseInt(pos[j], 10) / 16;
 						} catch (NumberFormatException e) {
 						}
 					}
-					opt.rectCut = true;
+					opt.rect = rect;
+				} else if(args[i].equals("-y")) {
+					if(++i >= args.length)
+						break;
+					String[] y = args[i].split(",");
+					if(y.length != 2)
+						break;
+					int[] yRange = new int[2];
+					for(int j=0; j<2; ++j) {
+						try {
+							yRange[j] = Integer.parseInt(y[j], 10);
+						} catch (NumberFormatException e) {
+						}
+					}
+					opt.yRange = yRange;
 				}
 			}
 			if(!userDefinedPreservedId) {

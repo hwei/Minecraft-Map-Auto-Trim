@@ -36,18 +36,37 @@ public class McrChunkData implements IChunkData {
 		return new BlockIterator();
 	}
 	
+	@Override
+	public Iterator<Integer> blockIterator(int yStart, int yEnd) {
+		return new BlockIterator(yStart, yEnd);
+	}
+	
 	protected class BlockIterator implements Iterator<Integer> {
 		
-		protected int pos = 0;
+		public BlockIterator() {
+			this.pos = 0;
+			this.end = CHUNK_SIZE;
+		}
+		
+		public BlockIterator(int yStart, int yEnd) {
+			yStart = Math.max(yStart, 0);
+			yEnd = Math.min(yEnd, 128);
+			this.pos = yStart << 8;
+			this.end = yEnd << 8;
+		}
+		
+		protected int pos;
+		protected int end;
 		
 		@Override
 		public boolean hasNext() {
-			return pos < CHUNK_SIZE;
+			return pos < end;
 		}
 
 		@Override
 		public Integer next() {
-			int result = blocks[pos] & 0xff;
+			int mcrPos = (pos >> 8) | ((pos & 0xff) << 7);
+			int result = blocks[mcrPos] & 0xff;
 			++pos;
 			return result;
 		}
@@ -67,4 +86,6 @@ public class McrChunkData implements IChunkData {
 	public int getZPos() {
 		return this.zPos;
 	}
+
+	
 }

@@ -26,12 +26,26 @@ public class ChunkHandle {
 	public void delete() {
 		worldCache.deleteChunk(this);
 	}
-	
+
 	public boolean hasAnyBlock(boolean[] blockIdMask) {
 		IChunkData chunkData = worldCache.getChunkData(this);
 		if(chunkData == null)
 			return false;
 		Iterator<Integer> iter = chunkData.blockIterator();
+		while(iter.hasNext()) {
+			int blockId = iter.next();
+			if(blockIdMask[blockId]) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean hasAnyBlock(boolean[] blockIdMask, int yBegin, int yEnd) {
+		IChunkData chunkData = worldCache.getChunkData(this);
+		if(chunkData == null)
+			return false;
+		Iterator<Integer> iter = chunkData.blockIterator(yBegin, yEnd);
 		while(iter.hasNext()) {
 			int blockId = iter.next();
 			if(blockIdMask[blockId]) {
