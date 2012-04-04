@@ -72,7 +72,11 @@ public class MapAutoTrim {
 			ChunkHandle chunkHandle = iterChunkHandle.next();
 			ChunkAndMarks cm = new ChunkAndMarks();
 			cm.chunkHandle = chunkHandle;
-			cm.containPreservedBlock = chunkHandle.hasAnyBlock(opt.preservedIds);
+			if(opt.yRange == null) {
+				cm.containPreservedBlock = chunkHandle.hasAnyBlock(opt.preservedIds);
+			} else {
+				cm.containPreservedBlock = chunkHandle.hasAnyBlock(opt.preservedIds, opt.yRange[0], opt.yRange[1]);
+			}
 			cm.nearPreservedChunk = cm.containPreservedBlock;
 			IntPair pos = new IntPair(chunkHandle.getChunkX(), chunkHandle.getChunkZ());
 			if(opt.rect != null) {
@@ -136,7 +140,7 @@ public class MapAutoTrim {
 	
 	static void printUsage() {
 		System.out.println("Minecraft Map Auto Trim. Help you delete unnecessary trunks.");
-		System.out.println("Version: 0.4, Author: hwei");
+		System.out.println("Version: 0.4.1, Author: hwei");
         System.out.println("");
         System.out.println("Usage:");
         System.out.println("\tjava -jar mmat.jar -w <world path> [-d <dilation size>] [-p <id list>] [-r <minX,maxX,minZ,maxZ>] [-y <yBegin,yEnd>]");
