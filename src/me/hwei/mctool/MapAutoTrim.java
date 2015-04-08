@@ -1,12 +1,8 @@
 package me.hwei.mctool;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.TreeMap;
 
 import me.hwei.mctool.world.ChunkHandle;
 import me.hwei.mctool.world.WorldStorage;
@@ -37,14 +33,25 @@ public class MapAutoTrim {
 		ArrayList<ChunkHandle> allChunks = worldStorage.getAllChunks();
 		System.out.printf("Found %d chunks.\n\n", allChunks.size());
 		System.out.println("Using following parameters to trim:");
-		System.out.print("Perserved block ID list: ");
-		for(int i=0; i<opt.preservedIds.length; ++i) {
-			if(opt.preservedIds[i]) {
-				System.out.print(i);
-				System.out.print(' ');
-			}
-		}
-		System.out.println();
+        System.out.println("Conditions:");
+
+        for (Options.Condition condition : opt.conditions) {
+            System.out.print("For Y range: ");
+            if (condition.yRange == null) {
+                System.out.print("(none)");
+            } else {
+                System.out.printf("yBegin=%d yEnd=%d", condition.yRange[0], condition.yRange[1]);
+            }
+            System.out.printf(",\n\tpreserved block ID list: ");
+            for (int i = 0; i < condition.preservedIds.length; ++i) {
+                if (condition.preservedIds[i]) {
+                    System.out.print(i);
+                    System.out.print(' ');
+                }
+            }
+            System.out.println();
+        }
+
 		System.out.printf("Dilation size: %d\n", opt.dilationSize);
 		System.out.print("Cut rectangle: ");
 		if(opt.rect == null) {
@@ -54,14 +61,7 @@ public class MapAutoTrim {
 					opt.rect[0] * 16, opt.rect[1] * 16 + 15,
 					opt.rect[2] * 16, opt.rect[3] * 16 + 15);
 		} 
-		System.out.print("Y range: ");
-		if(opt.yRange == null) {
-			System.out.println("(none)");
-		} else {
-			System.out.printf("yBegin=%d yEnd=%d\n", opt.yRange[0], opt.yRange[1]);
-		}
-		System.out.println();
-		
+
 		System.out.print("Reading chunks... ");
 		ProgressReporter progressReporter = new ProgressReporter(allChunks.size());
 		
@@ -72,11 +72,14 @@ public class MapAutoTrim {
 			ChunkHandle chunkHandle = iterChunkHandle.next();
 			ChunkAndMarks cm = new ChunkAndMarks();
 			cm.chunkHandle = chunkHandle;
-			if(opt.yRange == null) {
-				cm.containPreservedBlock = chunkHandle.hasAnyBlock(opt.preservedIds);
-			} else {
-				cm.containPreservedBlock = chunkHandle.hasAnyBlock(opt.preservedIds, opt.yRange[0], opt.yRange[1]);
-			}
+            for (Options.Condition condition : opt.conditions)
+            {
+                if(condition.yRange == null) {
+                    cm.containPreservedBlock |= chunkHandle.hasAnyBlock(condition.preservedIds);
+                } else {
+                    cm.containPreservedBlock |= chunkHandle.hasAnyBlock(condition.preservedIds, condition.yRange[0], condition.yRange[1]);
+                }
+            }
 			cm.nearPreservedChunk = cm.containPreservedBlock;
 			IntPair pos = new IntPair(chunkHandle.getChunkX(), chunkHandle.getChunkZ());
 			if(opt.rect != null) {
@@ -143,28 +146,61 @@ public class MapAutoTrim {
 		System.out.println("Version: 0.4.1, Author: hwei");
         System.out.println("");
         System.out.println("Usage:");
-        System.out.println("\tjava -jar mmat.jar -w <world path> [-d <dilation size>] [-p <id list>] [-r <minX,maxX,minZ,maxZ>] [-y <yBegin,yEnd>]");
+        System.out.println("\tjava -jar mmat.jar -w <world path> [-d <dilation size>] [-r <minX,maxX,minZ,maxZ>] [-p <id list>] [-y <yBegin,yEnd>] [-p <id list 2>] [-y <yBegin 2,yEnd 2>] ... [-p <id list N>] [-y <yBegin N,yEnd N>]");
         System.out.println("Where:");
         System.out.println("\t-w <world path>\tPath to the world folders");
         System.out.println("\t-d <dilation size>\tDilate preserved area to perserve more chunks around the chunks with \"perserve block\"");
         System.out.println("\t-p <id list>\tDefine a list of \"perserve block\".If a chunk contains any \"perserve block\", it will be preserved.");
         System.out.println("\t-r <minX,maxX,minZ,maxZ>\tIf specified, all the chunks outside this rectangle will be forced to delete.");
         System.out.println("\t-y <yBegin,yEnd>\tIf specified, only scan this range of height.");
-        System.out.println("Example:");
+        System.out.println("\tSpecify one or more pairs of -y and -p options to add a condition.  If any one of the conditions is met, the chunk is not deleted");
+        System.out.println("Examples:");
+        System.out.println("\tDilate by 3 chunks, remove all chunks outside a x/z 1000 block radius from the origin, otherwise delete all chunks not containing blocks with ids 63 and 68 from Y-level 64 and above");
         System.out.println("\tjava -jar mmat.jar -w ~/minecraft/world -d 3 -p 63,68 -r -1000,1000,-1000,1000 -y 64,256");
+        System.out.println("\tDelete chunks not containing blocks with ids 63 and 68 Y-level 64 and above and also not containing blocks with id 138 Y-level 63 and below");
+        System.out.println("\tjava -jar mmat.jar -w ~/minecraft/world -p 63,68 -y 64,256 -p 138 -y 0,63");
         System.exit(1);
 	}
 	
 	static protected class Options
 	{
+        private static final int[] DefaultPreservedIds = {5,19,20,22,23,25,26,27,
+                28,29,33,34,35,36,41,42,43,44,45,46,47,53,55,57,59,
+                60,63,64,65,66,67,68,69,70,71,72,75,76,77,80,84,85,
+                87,88,89,91,92,93,94,96};
+
+        static protected class Condition
+        {
+            private boolean preservedIdsSet = false;
+
+            public final boolean[] preservedIds = new boolean[4096];
+            public int[] yRange= null;
+
+            public void assignIds(int [] ids)
+            {
+                for (int id : ids) {
+                    this.preservedIds[id] = true;
+                }
+                this.preservedIdsSet = true;
+            }
+
+            public boolean isPreservedIdsSet() { return this.preservedIdsSet; }
+            public void finishUpDude()
+            {
+                if (!preservedIdsSet) {
+                    assignIds(DefaultPreservedIds);
+                }
+            }
+        }
 		public String mapPathStr = null;
 		public int dilationSize = 3;
-		public boolean[] preservedIds = new boolean[4096];
-		public int[] rect = null;
-		public int[] yRange= null;
+        public List<Condition> conditions = new LinkedList<Condition>();
+        public int[] rect = null;
 		public static Options ReadArgs(String[] args) {
 			Options opt = new Options();
-			boolean userDefinedPreservedId = false;
+            Condition condition = new Condition();
+            opt.conditions.add(condition);
+
 			for(int i=0; i<args.length; ++i) {
 				if(args[i].equals("-w")) {
 					if(++i >= args.length)
@@ -181,17 +217,25 @@ public class MapAutoTrim {
 					} catch (NumberFormatException e) {
 					}
 				} else if(args[i].equals("-p")) {
+                    if (condition.isPreservedIdsSet())
+                    {
+                        condition.finishUpDude();
+                        opt.conditions.add(condition = new Condition());
+                    }
+
 					if(++i >= args.length)
 						break;
-					String[] ids = args[i].split(",");
-					for(String id : ids) {
-						try {
-							byte blockId = Byte.parseByte(id, 10);
-							opt.preservedIds[blockId] = true;
-						} catch (NumberFormatException e) {
-						}
-					}
-					userDefinedPreservedId = true;
+					String[] stringIds = args[i].split(",");
+                    int[] ids = new int[stringIds.length];
+                    for (int c = 0; c < stringIds.length; ++c)
+                    {
+                        try {
+                            ids[c] = Short.parseShort(stringIds[c], 10);
+                        } catch (NumberFormatException e) {
+                        }
+                    }
+                    condition.assignIds(ids);
+
 				} else if(args[i].equals("-r")) {
 					if(++i >= args.length)
 						break;
@@ -207,6 +251,12 @@ public class MapAutoTrim {
 					}
 					opt.rect = rect;
 				} else if(args[i].equals("-y")) {
+                    if (condition.yRange != null)
+                    {
+                        condition.finishUpDude();
+                        opt.conditions.add(condition = new Condition());
+                    }
+
 					if(++i >= args.length)
 						break;
 					String[] y = args[i].split(",");
@@ -219,19 +269,12 @@ public class MapAutoTrim {
 						} catch (NumberFormatException e) {
 						}
 					}
-					opt.yRange = yRange;
+					condition.yRange = yRange;
 				}
 			}
-			if(!userDefinedPreservedId) {
-				final int[] DefaultPreservedIds = {5,19,20,22,23,25,26,27,
-						28,29,33,34,35,36,41,42,43,44,45,46,47,53,55,57,59,
-						60,63,64,65,66,67,68,69,70,71,72,75,76,77,80,84,85,
-						87,88,89,91,92,93,94,96};
-				for(int i=0; i<DefaultPreservedIds.length; ++i) {
-					opt.preservedIds[DefaultPreservedIds[i]] = true;
-				}
-			}
-			
+
+            condition.finishUpDude();
+
 			return opt;
 		}
 	}
