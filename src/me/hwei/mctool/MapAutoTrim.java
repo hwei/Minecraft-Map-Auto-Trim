@@ -84,7 +84,7 @@ public class MapAutoTrim {
 			IntPair pos = new IntPair(chunkHandle.getChunkX(), chunkHandle.getChunkZ());
 			if(opt.rect != null) {
 				if(pos.getLeft() < opt.rect[0] || pos.getLeft() > opt.rect[1]
-						|| pos.getLeft() < opt.rect[2] || pos.getRight() > opt.rect[3]) {
+						|| pos.getRight() < opt.rect[2] || pos.getRight() > opt.rect[3]) {
 					cm.outOfrange = true;
 				}
 			}
